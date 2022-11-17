@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voting Blockchain</title>
+  <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-core.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-pie.min.js"></script>
+
+  <style>
+    html, body, #container {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+	  font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="topnav">
+  <a href="../dhbw-blockchain-website/index.html">Vote Now</a>
+  <a href="../dhbw-blockchain-website/index2.html">Check your vote</a>
+  <a href="../dhbw-blockchain-website/index3.html">count votes</a>
+  <a href="../dhbw-blockchain-website/index4.html">Check the blockchain</a>
+</div>
+
+<div id="container" style="width: 100%; height: 100%"></div>
+<script>
+  anychart.onDocumentReady(async () => {
+    async function getResponse() {
+      let url = 'http://127.0.0.1:45677/api/getAuszaehlung';
+      try {
+        let res = await fetch(url, {
+          method: 'post',
+          mode: 'cors',
+        });
+        return await res.json();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    let value_spd = 0;
+    let value_cdu = 0;
+    let value_gruenen = 0;
+    let value_fdp = 0;
+    let value_linken = 0;
+
+    async function update_data_auszaehlung() {
+      let response = await getResponse();
+
+      if (response.status === 'success') {
+        value_spd = response.value_spd;
+        value_cdu = response.value_cdu;
+        value_gruenen = response.value_gruenen;
+        value_fdp = response.value_fdp;
+        value_linken = response.value_linken;
+		return true;
+      } else if (response.status === 'error'){
+		return false;
+	  }
+    }
+
+    if (await update_data_auszaehlung()){
+		let data = [
+		  {x: "SPD", value: value_spd},
+		  {x: "CDU/CSU", value: value_cdu},
+		  {x: "Buendnis 90 / Die Gruenen", value: value_gruenen},
+		  {x: "FDP", value: value_fdp},
+		  {x: "Die Linken", value: value_linken}
+		];
+		const chart = anychart.pie();
+		chart.title("Wahlauszaehlung");
+		chart.data(data);
+		chart.legend().position("right");
+		chart.legend().itemsLayout("vertical");
+		chart.container('container');
+		chart.draw();
+	} else {
+		let infoText = document.createElement("p");
+		infoText.innerText = "Die Auszählungsergebnisse sind noch nicht verfügbar. Bitte versuchen sie es nach Ende der Wahl erneut.";
+		document.getElementById("container").appendChild(infoText);
+	}
+    
+  });
+</script>
+</body>
+</html>

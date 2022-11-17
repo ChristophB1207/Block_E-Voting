@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <title>Voting Blockchain</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <style>
+    body {font-family: "Lato", sans-serif}
+    input[type="file"]{display: none;}
+  </style>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <style>
+
+    html, body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body, div, h1, form, input, p {
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 16px;
+      color: #666;
+    }
+    h1 {
+      padding: 10px 0;
+      font-size: 32px;
+      font-weight: 300;
+      text-align: center;
+    }
+    p {
+      font-size: 12px;
+    }
+    hr {
+      color: #a9a9a9;
+      opacity: 0.3;
+    }
+    .main-block {
+      max-width: 640px;
+      min-height: 250px;
+      padding: 10px 0;
+      margin: auto;
+      border-radius: 5px;
+      border: solid 1px #ccc;
+      box-shadow: 1px 2px 5px rgba(0,0,0,.31);
+      background: #ebebeb;
+    }
+    .parent {
+      margin: 0 30px;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+	
+	table {
+		table-layout: fixed;
+	}
+	
+	.tableWrapper {
+		overflow-x: scroll;
+	}
+
+  </style>
+
+
+  <meta charset="utf-8">
+  <title>Online Wahlsystem</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafafa">
+</head>
+<body>
+<div class="topnav">
+  <a href="../dhbw-blockchain-website/index.html">Vote Now</a>
+  <a href="../dhbw-blockchain-website/index2.html">Check your vote</a>
+  <a href="../dhbw-blockchain-website/index3.html">Count votes</a>
+  <a href="../dhbw-blockchain-website/index4.html">Check the blockchain</a>
+</div>
+
+  <div id="main-block" class="main-block" >
+    <h1>Blockchain-Verifikation</h1>
+	<p id="info-text" style="text-align: center"></p>
+	<div id="blockchain-display" style="padding: 10px">
+	</div>
+  </div>
+
+  <script>
+	async function getFullChain() {
+      let url = 'http://127.0.0.1:45675/api/getFullChain';
+      try {
+        let res = await fetch(url, {
+          method: 'post',
+          mode: 'cors',
+        });
+        return await res.json();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+	
+	async function verify(blockchain){
+		const chain_length = blockchain.length; //The number of blocks in the chain
+		for (let [index, block] of blockchain.entries()){
+			console.log(block);
+			//This is the string used as input to SHA256 for calculating the block hash
+			let blockString = "";
+			blockString += block.block_nr.toString();
+			blockString += block.voter_id;
+			blockString += block.encrypted_vote;
+			blockString += block.hash_before;
+			console.log(blockString);
+			//Now we can calculate hash
+			const blockStringUint8 = new TextEncoder().encode(blockString);
+			const hashBuffer = await crypto.subtle.digest('SHA-256', blockStringUint8);
+			const hashArray = Array.from(new Uint8Array(hashBuffer));
+			const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+			//Store recomputed hash digest for later use
+			block.recomputed_hash = hashHex;
+			console.log(hashHex);
+			//Check computed hash and stored hash
+			let blockValid;
+			//Check if computed hash is the same as stored hash
+			if (hashHex !== block.hash) {
+				document.getElementById("info-text").innerHTML = "Fehler in Block Nr. " + block.block_nr + "." + "<br>"
+					+ "Gespeicherter Hash und berechneter Hash sind unterschiedlich.";
+				return false;
+			}
+			//Unless this is the last block, check if the next block stores this ones hash as hash.hash_before
+			if (index < (chain_length - 1)) {
+				if (hashHex !== blockchain[index+1].hash_before) {
+					document.getElementById("info-text").innerHTML = "Fehler in Block Nr. " + block.block_nr + "." + "<br>"
+						+ "Nächster Block enthält falschen hash_before.";
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	function printBlockchain(blockchain){
+		for (let block of blockchain){
+			let newDiv = document.createElement("div");
+			let blockHeading = document.createElement("h4");
+			blockHeading.innerText = "Block Nr. " + block.block_nr;
+			newDiv.appendChild(blockHeading);
+			let wrapperDiv = document.createElement("div");
+			wrapperDiv.classList.add("tableWrapper");
+			let contentTable = document.createElement("table")
+			contentTable.innerHTML =
+				  "<tr><td>block_nr:</td><td>" + block.block_nr.toString() + "</td></tr>"
+				+ "<tr><td>voter_id:</td><td>" + block.voter_id + "</td></tr>"
+				+ "<tr><td>encrypted_vote:</td><td>" + block.encrypted_vote + "</td></tr>"
+				+ "<tr><td>hash_before:</td><td>" + block.hash_before + "</td></tr>"
+				+ "<tr><td>Stored hash:</td><td>" + block.hash + "</td></tr>"
+				+ "<tr><td>Recomputed hash:</td><td>" + block.recomputed_hash + "</td></tr>";
+			wrapperDiv.appendChild(contentTable);
+			newDiv.appendChild(wrapperDiv);
+			document.getElementById("blockchain-display").appendChild(newDiv);
+		}
+	}
+	
+	async function main(){
+		let blockchain = await getFullChain();
+		console.log(blockchain);
+		let blockchainValid = await verify(blockchain);
+		if (blockchainValid){
+			document.getElementById("info-text").innerHTML = "Blockchain valide."
+		}
+		printBlockchain(blockchain);
+	}
+	
+	main();
+  </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <title>Voting Blockchain</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <style>
+    body {font-family: "Lato", sans-serif}
+    input[type="file"]{display: none;}
+  </style>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <style>
+
+    html, body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body, div, h1, form, input, p {
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 16px;
+      color: #666;
+    }
+    h1 {
+      padding: 10px 0;
+      font-size: 32px;
+      font-weight: 300;
+      text-align: center;
+    }
+    p {
+      font-size: 12px;
+    }
+    hr {
+      color: #a9a9a9;
+      opacity: 0.3;
+    }
+    .main-block {
+      max-width: 340px;
+      min-height: 250px;
+      padding: 10px 0;
+      margin: auto;
+      border-radius: 5px;
+      border: solid 1px #ccc;
+      box-shadow: 1px 2px 5px rgba(0,0,0,.31);
+      background: #ebebeb;
+    }
+    .parent {
+      margin: 0 30px;
+    }
+
+    input[type=radio] {
+      display: none;
+    }
+
+    input[type=radio]:checked + label:after {
+      opacity: 1;
+    }
+    input[type=text], input[type=password] {
+      width: calc(100% - 57px);
+      height: 36px;
+      margin: 13px 0 0 -5px;
+      padding-left: 10px;
+      border-radius: 0 5px 5px 0;
+      border: solid 1px #cbc9c9;
+      box-shadow: 1px 2px 5px rgba(0,0,0,.09);
+      background: #fff;
+    }
+    input[type=password] {
+      margin-bottom: 15px;
+    }
+
+    .btn-block {
+      margin-top: 10px;
+      text-align: center;
+    }
+    button {
+      width: 100%;
+      padding: 10px 0;
+      margin: 10px auto;
+      border-radius: 5px;
+      border: none;
+      background: #1c87c9;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+    button:hover {
+      background: #26a9e0;
+    }
+	button:disabled {
+		background: #999393;
+	}
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+
+  </style>
+
+
+  <meta charset="utf-8">
+  <title>Online Wahlsystem</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafafa">
+</head>
+<body>
+<div class="topnav">
+  <a href="../dhbw-blockchain-website/index.html">Vote Now</a>
+  <a href="../dhbw-blockchain-website/index2.html">Check your vote</a>
+  <a href="../dhbw-blockchain-website/index3.html">count votes</a>
+  <a href="../dhbw-blockchain-website/index4.html">Check the blockchain</a>
+</div>
+
+  <div id="main-block" class="main-block" >
+    <h1>Registration</h1>
+    <div class="parent">
+      <hr>
+      <label id="personalIdLabel" for="personalId">Persönliche ID auswählen:</label>
+      <br>
+      <br>
+      <div class="image-upload">
+        <label for="personalId">
+          <img src="https://cdn.pixabay.com/photo/2017/02/07/02/16/cloud-2044823_960_720.png" width="100" height="100">
+        </label>
+        <input id="personalId" type="file" />
+		<p id="personalId-Info">Keine Datei ausgewählt.</p>
+      </div>
+      <br>
+
+      <label id="privateKeyLabel" for="privateKey">Private Key auswählen:</label>
+      <br>
+      <br>
+        <div class="image-upload">
+          <label for="privateKey">
+            <img src="https://cdn.pixabay.com/photo/2017/02/07/02/16/cloud-2044823_960_720.png" width="100" height="100">
+          </label>
+          <input id="privateKey" type="file" />
+		  <p id="privateKey-Info">Keine Datei ausgewählt.</p>
+        </div>
+      <br>
+      <br>
+      <div class="btn-block">
+        <button id="submitButton" onclick="displayVotedParty()" disabled>Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+	//Handle enabling/disabling the submit Button
+	submitButton = document.getElementById("submitButton");
+	
+	function updateSubmitButtonState(){
+		const personalIdInput = document.getElementById("personalId");
+		const privateKeyInput = document.getElementById("privateKey");
+		
+		if ((personalIdInput.files.length != 0) && (privateKeyInput.files.length != 0)){
+			//The user has entered both files, so we can enable the submit Button
+			submitButton.disabled = false;
+		} else {
+			//At least one of the files is missing, so we have to keep the submit Button disabled
+			submitButton.disabled = true;
+		}
+	}
+  
+	//Set up some listeners first to inform the user about which files are currently selected
+	function addPersonalIdFile(e){
+		let infoText = document.getElementById("personalId-Info");
+		infoText.innerText = "Datei " + e.target.files[0].name + " ausgewählt.";
+		updateSubmitButtonState();
+	}
+	
+	function addPrivateKeyFile(e){
+		let infoText = document.getElementById("privateKey-Info");
+		infoText.innerText = "Datei " + e.target.files[0].name + " ausgewählt.";
+		updateSubmitButtonState();
+	}
+  
+	document.getElementById("personalId").addEventListener('input', addPersonalIdFile);
+	document.getElementById("privateKey").addEventListener('input', addPrivateKeyFile);
+  
+	//Ask the register for our vote and display it to the user
+    async function displayVotedParty() {
+      async function getResponse(data) {
+        let url = 'http://127.0.0.1:45675/api/getVote';
+        try {
+          let res = await fetch(url, {
+            method: 'post',
+            body: data,
+            mode: 'cors',
+          });
+          return await res.json();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+
+      const personal_id_qr = document.getElementById("personalId");
+      const private_key_qr = document.getElementById("privateKey");
+
+      const personal_file = personal_id_qr.files[0];
+      const private_key_file = private_key_qr.files[0];
+
+      const formData = new FormData();
+
+      formData.append("personal_id_qr_base64", await toBase64(personal_file));
+      formData.append("private_key_qr_base64", await toBase64(private_key_file));
+
+      const data = new URLSearchParams();
+      for (const pair of formData) {
+        data.append(pair[0], pair[1]);
+      }
+
+      let response = await getResponse(data);
+
+      if (response.status === 'success') {
+        let voted_party = response.votedParty;
+        let div = document.getElementById('main-block');
+		let success_message = document.createElement('h1');
+		let timestamp_message = document.createElement('p');
+		success_message.innerText = "Gespeicherte Stimme: " + voted_party;
+		const now = new Date();
+		timestamp_message.innerText = "Zeitpunkt der Überprüfung: " + now.toLocaleString("de-DE");
+        div.appendChild(success_message);
+		div.appendChild(timestamp_message);
+      }
+    }
+  </script>
+</body>
+</html>
