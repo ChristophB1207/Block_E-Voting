@@ -1,0 +1,83 @@
+#############################################
+# Maria DB server + backup
+#############################################
+version: "3"
+
+services:
+
+  db:
+    build: 
+      context: .
+      dockerfile: Dockerfile-mariadb
+    container_name: ${ENV_CONTAINER_NAME}-01
+    volumes:
+    # create persistent docker volume
+    - ./data:/var/lib/mysql
+    # mount configuration
+    - ./config/:/etc/mysql/conf.d
+
+    # set static internal IP in docker network
+    # must match the current docker network address range
+    networks:
+        default:
+            ipv4_address: ${ENV_STATIC_IP}
+
+    restart: always
+    secrets:
+      - mysql_root_password
+      - mysql_app_password
+    
+   
+    environment:
+    - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+    - MYSQL_PASSWORD_FILE=/run/secrets/mysql_app_password
+    - MYSQL_USER=
+    - MYSQL_DATABASE=auth_register
+    - MYSQL_ALLOW_EMPTY_PASSWORD=no
+  
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+
+  backup:
+    build:
+      context: .
+      dockerfile: Dockerfile-backup
+    container_name: ${ENV_CONTAINER_NAME}-backup
+    restart: always
+    tty: true
+  
+    volumes:
+      # mount backup directory mysql
+    - ./backup:/backup/mysql
+
+    secrets:
+      - mysql_root_password
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    container_name: ${ENV_CONTAINER_NAME}-phpmyadmin
+    expose:
+      - 80
+    links:
+      - db:db
+    depends_on:
+      - "db"
+    environment:
+      - PMA_ABSOLUTE_URI=${ENV_PHPMYADMIN_URI}
+      - PMA_HOST=db
+      - UPLOAD_LIMIT=2G
+
+
+# secret files on server
+secrets:
+  mysql_root_password:
+    file: /home/bcvote/BlockchainTIF19AGruppeC/docker-compose-mariadb/config/password.txt
+  mysql_app_password:
+    file: /home/bcvote/BlockchainTIF19AGruppeC/docker-compose-mariadb/config/user.txt
+    
+# default network for this docker stack
+networks:
+  default:
+    external:
+      name: ${ENV_DOCKER_NETWORK_NAME}

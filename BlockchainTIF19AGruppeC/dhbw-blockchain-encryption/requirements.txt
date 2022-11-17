@@ -1,0 +1,14 @@
+mariadb~=1.1.4
+Flask~=2.2.0
+Werkzeug~=2.2.1
+six~=1.16.0
+mock~=4.0.3
+pytz~=2022.1
+setuptools~=60.2.0
+aniso8601~=9.0.1
+qrcode~=7.3.1
+argon2_cffi
+eciespy
+pillow~=9.2.0
+pyzbar
+requests
