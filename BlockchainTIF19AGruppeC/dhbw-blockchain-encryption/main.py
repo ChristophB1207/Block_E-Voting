@@ -4,6 +4,7 @@ import json
 import pathlib
 import requests
 from base64 import encodebytes
+from collections import Counter
 
 from PIL import Image
 from ecies import decrypt
@@ -37,6 +38,10 @@ def remove_file(image_path):
 admin_priv_key = get_admin_priv_key()
 admin_pub_key = get_admin_pub_key()
 
+@app.route('/api/getOptions', methods=['POST'])
+def return_options():
+    response = prepare_response(jsonify(get_options()), 200)
+    return response
 
 @app.route('/api/transmit', methods=['POST'])
 def create_record():
@@ -90,7 +95,7 @@ def create_record():
         response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Headers", "*")
         response.headers.add("Access-Control-Allow-Methods", "*")
-        return response.response
+        return response
 
     response = make_response(jsonify({
         'status': 'error',
@@ -99,7 +104,7 @@ def create_record():
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Headers", "*")
     response.headers.add("Access-Control-Allow-Methods", "*")
-    return response.response
+    return response
 
 
 def prepare_response(json, code):
@@ -127,11 +132,16 @@ def get_auszaehlung():
              "description": "Election still in progress"}), 403) #403 = HTTP Access Forbidden code
         return response
     
-    value_spd = 0
-    value_cdu = 0
-    value_gruenen = 0
-    value_fdp = 0
-    value_linken = 0
+    #value_spd = 0
+    #value_cdu = 0
+    #value_gruenen = 0
+    #value_fdp = 0
+    #value_linken = 0
+    #Initialize empty result dictionary
+    results = {}
+    #Initialize it with the options from the config file
+    for option in get_options():
+        results[option] = 0 
 
     r = requests.post("http://127.0.0.1:45675/api/getTransactions")
     transactions = r.json()
@@ -153,25 +163,38 @@ def get_auszaehlung():
         encrypted_vote = base64.b64decode(encrypted_vote_base64)
         output = decrypt(private_key.decode('UTF-8'), encrypted_vote)
 
-        if output.decode('UTF-8') == 'SPD':
-            value_spd += 1
-        elif output.decode('UTF-8') == 'CDU':
-            value_cdu += 1
-        elif output.decode('UTF-8') == 'FDP':
-            value_fdp += 1
-        elif output.decode('UTF-8') == 'Die Linken':
-            value_linken += 1
-        elif output.decode('UTF-8') == 'Bündnis 90 / Die Grünen':
-            value_gruenen += 1
+        #if output.decode('UTF-8') == 'SPD':
+        #    value_spd += 1
+        #elif output.decode('UTF-8') == 'CDU':
+        #    value_cdu += 1
+        #elif output.decode('UTF-8') == 'FDP':
+        #    value_fdp += 1
+        #elif output.decode('UTF-8') == 'Die Linken':
+        #    value_linken += 1
+        #elif output.decode('UTF-8') == 'Bündnis 90 / Die Grünen':
+        #    value_gruenen += 1
+        
+        #Skip unknown values for now
+        vote = output.decode('UTF-8')
+        print("Decrypted vote: " + vote)
+        if vote not in get_options():
+            #NOTE: This would be a great place to implement write-in ballots
+            #Only some additional update logic would be needed here
+            continue
+        else:
+            results[vote] += 1;
 
-    response = prepare_response(jsonify({
-        'status': 'success',
-        'value_spd': value_spd,
-        'value_cdu': value_cdu,
-        'value_gruenen': value_gruenen,
-        'value_fdp': value_fdp,
-        'value_linken': value_linken,
-    }), 200)
+    #response = prepare_response(jsonify({
+    #    'status': 'success',
+    #    'value_spd': value_spd,
+    #    'value_cdu': value_cdu,
+    #    'value_gruenen': value_gruenen,
+    #    'value_fdp': value_fdp,
+    #    'value_linken': value_linken,
+    #}), 200)
+    response_dict = {"status": "success", "results": results}
+    print(response_dict)
+    response = prepare_response(jsonify(response_dict), 200)
     return response
 
 

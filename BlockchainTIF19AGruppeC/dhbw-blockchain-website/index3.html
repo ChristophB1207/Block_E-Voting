@@ -65,28 +65,40 @@
       }
     }
 
-    let value_spd = 0;
+	/*
+	let value_spd = 0;
     let value_cdu = 0;
     let value_gruenen = 0;
     let value_fdp = 0;
     let value_linken = 0;
+	*/
+	let resultsObject = {};
 
     async function update_data_auszaehlung() {
       let response = await getResponse();
 
       if (response.status === 'success') {
+		/*
         value_spd = response.value_spd;
         value_cdu = response.value_cdu;
         value_gruenen = response.value_gruenen;
         value_fdp = response.value_fdp;
         value_linken = response.value_linken;
+		*/
+		console.log(response.results);
+		resultsObject = response.results;
+		
 		return true;
-      } else if (response.status === 'error'){
+      } else if ((response.status === 'error') && (response.description === 'Election still in progress')){
+		let infoText = document.createElement("p");
+		infoText.innerText = "Die Auszählungsergebnisse sind noch nicht verfügbar. Bitte versuchen sie es nach Ende der Wahl erneut.";
+		document.getElementById("container").appendChild(infoText);
 		return false;
 	  }
     }
 
     if (await update_data_auszaehlung()){
+		/*
 		let data = [
 		  {x: "SPD", value: value_spd},
 		  {x: "CDU/CSU", value: value_cdu},
@@ -94,6 +106,14 @@
 		  {x: "FDP", value: value_fdp},
 		  {x: "Die Linken", value: value_linken}
 		];
+		*/
+		
+		let data = [];
+		for (const option in resultsObject){
+			data.push({x: option, value: resultsObject[option]});
+		}
+		console.log(data);
+		
 		const chart = anychart.pie();
 		chart.title("Wahlauszaehlung");
 		chart.data(data);
@@ -101,10 +121,6 @@
 		chart.legend().itemsLayout("vertical");
 		chart.container('container');
 		chart.draw();
-	} else {
-		let infoText = document.createElement("p");
-		infoText.innerText = "Die Auszählungsergebnisse sind noch nicht verfügbar. Bitte versuchen sie es nach Ende der Wahl erneut.";
-		document.getElementById("container").appendChild(infoText);
 	}
     
   });

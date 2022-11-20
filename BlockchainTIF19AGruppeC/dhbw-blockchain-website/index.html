@@ -110,11 +110,6 @@
                     </div>
                 </div>
                 <select id="partei" class="form-select" aria-label="Default select example">
-                    <option selected value="1">SPD</option>
-                    <option value="2">CDU</option>
-                    <option value="3">Bündnis 90 / Die Grünen</option>
-                    <option value="4">FDP</option>
-                    <option value="5">Die Linken</option>
                 </select>
                 <button id="sendButton" class="w3-button w3-black w3-section w3-right"  onclick="sendVotingData()" >SEND</button>
             </div>
@@ -149,6 +144,30 @@
 
 <script src="js/bootstrap.js"></script>
 <script>
+	//Initialize voting options first
+	async function getVoteOptions() {
+      let url = 'http://127.0.0.1:45677/api/getOptions';
+      try {
+        let res = await fetch(url, {
+          method: 'post',
+          mode: 'cors',
+        });
+        return await res.json();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+	
+	getVoteOptions().then((optionArray) => {
+		let optionSelect = document.getElementById("partei");
+		for (const option of optionArray){
+			let newOption = document.createElement("option");
+			newOption.text = option;
+			optionSelect.options.add(newOption);
+		}
+	})
+
+	//Set up exit confirmation
 	function confirmUnload(){
 		return 	"Sind Sie sicher, dass Sie die Stimmabgabe schließen wollen?\n" +
 				"Wenn Sie die QR-Codes nicht gespeichert haben, sind ihre persönlichen Daten nach dem Verlassen für immer verloren."
@@ -172,6 +191,7 @@
 		return str !== str.toUpperCase();
 	}
 
+	//Check inputs and send data
     async function sendVotingData() {
         let pin = document.getElementById("voting_pin").value;
         let personal_number = document.getElementById("personal_number").value;
@@ -223,6 +243,7 @@
         }
     }
 
+	//Send vote to the voting server and return the response
     async function getResponse(data) {
         let url = 'http://127.0.0.1:45677/api/transmit';
         try {

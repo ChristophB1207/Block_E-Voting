@@ -248,9 +248,11 @@
 
       let response = await getResponse(data);
 
-      if (response.status === 'success') {
+	  let div = document.getElementById('main-block');
+      
+	  if (response.status === 'success') {
         let voted_party = response.votedParty;
-        let div = document.getElementById('main-block');
+        
 		let success_message = document.createElement('h1');
 		let timestamp_message = document.createElement('p');
 		success_message.innerText = "Gespeicherte Stimme: " + voted_party;
@@ -258,7 +260,12 @@
 		timestamp_message.innerText = "Zeitpunkt der Überprüfung: " + now.toLocaleString("de-DE");
         div.appendChild(success_message);
 		div.appendChild(timestamp_message);
-      }
+      } else {
+		console.log(data);
+		let infoMessage = document.createElement('h3');
+		infoMessage.innerText = "Fehler beim Verifizieren der Stimme.";
+		div.appendChild(infoMessage);
+	  }
     }
   </script>
 </body>

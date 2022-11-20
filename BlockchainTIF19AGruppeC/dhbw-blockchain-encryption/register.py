@@ -51,7 +51,7 @@ def get_full_chain():
                        'encrypted_vote': encrypted_vote,
                        'hash_before': block.hash_before,
                        'hash': block.hash})
-    response = prepare_response(json.dumps(blocks), 200)
+    response = prepare_response(jsonify(blocks), 200)
     return response
     #return Response(json.dumps(blocks), mimetype='application/json'), 200
 
