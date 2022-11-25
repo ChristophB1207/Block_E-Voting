@@ -4,8 +4,4 @@ Ziel war es, den Prototyp des Vorgänger Jahrgangs zu analysieren und weiter zu 
 
 # First Start Guide
 
-
-
-
-
-## UML diagrams
+## Aufbau der Dokumentation
