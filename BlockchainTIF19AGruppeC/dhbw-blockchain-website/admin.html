@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <title>Voting Blockchain</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="jquery-3.6.1.min.js"></script>
+    
+    <style>
+        body {font-family: "Lato", sans-serif}
+    </style>
+    <meta charset="utf-8">
+    <title>Online Wahlsystem</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fafafa">
+   
+    <style>
+        w3-33{width:33%}
+
+        .card {
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 15px;
+            background-color: white;
+            width: 700px;
+            border-radius: 15px;
+        }
+        .card-img-top {
+            border-radius: 15px;
+        }
+        .heading {
+            color: hsl(218, 44%, 22%);
+            font-size: 18px;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        .card-parent {
+            display: flex;
+            flex-direction: row;
+        }
+
+
+        .topnav {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .topnav a.active {
+            background-color: #04AA6D;
+            color: white;
+        }
+        
+        *{
+	    margin: 0;
+	    padding: 0;
+	    box-sizing: border-box;
+        }
+
+      
+
+        h1{
+            text-align: center;
+            color:  #888;
+        }
+
+        .form{
+            padding: 20px;
+        }
+
+        .form p{
+            border-bottom: thin dotted #d4d4d4;
+            padding: 20px 10px 0px 0px;
+            font-style: italic;
+            font-size: 18px;
+        }
+
+        .form p span{
+            font-size: 16px;
+            
+            cursor: pointer;
+            display: inline-block;
+        }
+        .nform p span.mark{
+            color: green;
+            font-size: 30px;
+            transform: translateY(-10px);
+        }
+
+        form{
+            width:  100%;
+        }
+
+        .field{
+            margin-bottom: 10px;
+            display: flex;
+            transition: opacity 0.3s;
+        }
+
+        .field input{
+            padding: 5px 10px;
+            width: 100%;
+            border: none;
+            border: thin solid #d4d4d4; 
+            font-size: 20px;
+            color: #888;
+            font-family: ubuntu, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .field input:focus{
+            outline: none;
+        }
+
+        .field span{
+            display: inline-block;
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            padding: 10px;
+            font-size: 20px;
+            transition: all 0.3s;
+            font-weight: bold;
+            border: thin solid #d4d4d4; 
+        }
+        .field span:last-child{
+            display: none;
+            padding: 12px;
+        }
+        .field span:hover{
+            background-color: green;
+            border: thin solid green;
+            color: #fff;
+        }
+        .field span:last-child:hover{
+            background-color: red;
+            border: thin solid red;
+            color: #fff;
+        }
+
+
+        button{
+            display: block;
+            padding: 10px 20px;
+            margin-top: 30px;
+            width:  150px;
+            float: left;
+            font-size: 16px;
+            background-color: #5b8ebf;
+            border: thin solid #d5e4d4;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        button:active{
+            background-color: #aedea6;
+            color: #000;
+        }
+
+        .reset{
+            float: right;
+            background-color: green;
+        }
+        .outerbody{
+            font-family: sans-serif;
+            min-height: 100%;
+            color: #555;
+            width:  600px;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+    <a href="../dhbw-blockchain-website/index.html">Vote Now</a>
+    <a href="../dhbw-blockchain-website/index2.html">Check your vote</a>
+    <a href="../dhbw-blockchain-website/index3.html">count votes</a>
+    <a href="../dhbw-blockchain-website/index4.html">Check the blockchain</a>
+    <a href="../dhbw-blockchain-website/admin.html">Admin Page</a>
+</div>
+
+<div class="w3-content"  style="margin-top:46px;"  >
+    <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+        <h2 class="w3-center"><i>Wahl erstellen</i></h2>
+        <div class="w3-row w3-padding-32">
+            <div class="w3-col m6 w3-large w3-margin-bottom">
+               
+                
+         
+            </div>
+        </div>
+      </div>
+    </div>
+    
+<div class = "outerbody">
+ 
+
+
+    
+<form action="" method="post">
+    
+    
+    
+    <div class="field" >
+    
+        <label for="Date"></label> 
+        <input type="datetime-local" id="Date" name="Date"
+        value="2022-12-11T15:00"
+        min="2022-12-01T00:00:" max="2025-01-01T00:00">            
+    </div>
+        
+     <div class="field">
+           
+           <input type="text" name="Partei" placeholder="Partei">
+           <span onclick="addField(this)">+</span>
+           <span onclick="removeField(this)">-</span>
+        </div>
+            
+        <button type="submit" >Wahl erstellen</button>
+     </form>
+
+</div>
+
+ 
+
+
+</body>
+
+
+<script src="js/bootstrap.js"></script>
+<script src="jquery-3.6.1.min.js"></script>
+<script>
+
+
+
+let form = document.forms[0];
+let displayButton = document.querySelector("form button");
+function addField(plusElement){
+   let displayButton = document.querySelector("form button");
+ 
+   // Stopping the function if the input field has no value.
+   if(plusElement.previousElementSibling.value.trim() === ""){
+      return false;
+   }
+ 
+   // creating the div container.
+   let div = document.createElement("div");
+   div.setAttribute("class", "field");
+ 
+   // Creating the input element.
+   let field = document.createElement("input");
+   field.setAttribute("type", "text");
+   field.setAttribute("name", "Partei");
+ 
+   // Creating the plus span element.
+   let plus = document.createElement("span");
+   plus.setAttribute("onclick", "addField(this)");
+   let plusText = document.createTextNode("+");
+   plus.appendChild(plusText);
+ 
+   // Creating the minus span element.
+   let minus = document.createElement("span");
+   minus.setAttribute("onclick", "removeField(this)");
+   let minusText = document.createTextNode("-");
+   minus.appendChild(minusText);
+ 
+   // Adding the elements to the DOM.
+   form.insertBefore(div, displayButton);
+   div.appendChild(field);
+   div.appendChild(plus);
+   div.appendChild(minus);
+ 
+   // Un hiding the minus sign.
+   plusElement.nextElementSibling.style.display = "block"; // the minus sign
+   // Hiding the plus sign.
+   plusElement.style.display = "none"; // the plus sign
+}
+
+function removeField(minusElement){
+    minusElement.parentElement.remove();
+    }
+
+
+//form.onsubmit = function(event){
+  //  event.preventDefault();
+
+
+   // let data = new FormData(form);
+
+
+    //let partei = [];
+    //data.forEach(function(value){
+      //  if(value !== ""){
+        //        partei.push(value);
+        //}
+    //});
+    
+   // let out="";
+    //for(let value of partei){
+      //  alert(value);}
+    
+
+//}
+config = {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+}
+flatpickr("input[type=datetime-local]", config);
+
+
+
+function handleSubmit(event){
+    event.preventDefault();
+    
+    
+    const data = new FormData(event.target);
+    const options = Object.fromEntries(data.entries());
+    options.Partei = data.getAll("Partei");
+    options.Date = data.getAll("Date");
+    
+    downloadObjectAsJson(options, "config");
+    return true;
+    //console.log({options});
+}
+
+
+const form_ = document.querySelector('form');
+form_.addEventListener('submit', handleSubmit);
+
+
+function downloadObjectAsJson(exportObj, exportName){
+    var dataStr = "data:text(json;charset=uth-8,"+ encodeURIComponent(JSON.stringify(exportObj));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",dataStr);
+    downloadAnchorNode.setAttribute("download", exportName)
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+</script> 
+</html>
