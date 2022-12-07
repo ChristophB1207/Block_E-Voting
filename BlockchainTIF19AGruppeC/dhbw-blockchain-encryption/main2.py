@@ -4,6 +4,7 @@ import json
 import pathlib
 import requests
 from base64 import encodebytes
+from collections import Counter
 
 from PIL import Image
 from ecies import decrypt
@@ -11,7 +12,8 @@ from flask import Flask, request, jsonify, make_response
 
 from auth_service import user_authenticated, get_server_from_discovery_service, add_private_key, save_admin_keys, \
     get_admin_priv_key, get_priv_keys, get_admin_pub_key
-from encryption_service import submit_vote_to_blockchain, private_key_list
+from encryption_service import submit_vote_to_blockchain, private_key_list, generate_admin_private_key
+from config_management import get_options, is_election_over
 
 app = Flask(__name__)
 
@@ -29,12 +31,17 @@ def remove_file(image_path):
     file.unlink()
 
 
+# INITIAL RUN REQUIREMENT:
 #if admin key is empty in database
 #(admin_pub_key, admin_priv_key) = generate_admin_private_key()
 #save_admin_keys(admin_pub_key, admin_priv_key)
 admin_priv_key = get_admin_priv_key()
 admin_pub_key = get_admin_pub_key()
 
+@app.route('/api/getOptions', methods=['POST'])
+def return_options():
+    response = prepare_response(jsonify(get_options()), 200)
+    return response
 
 @app.route('/api/transmit', methods=['POST'])
 def create_record():
@@ -42,6 +49,12 @@ def create_record():
     pin = request.form['pin']
     auth_pin = request.form['auth_pin']
     partei = request.form['partei']
+
+    if is_election_over():
+        response = prepare_response(jsonify(
+            {"status": "error",
+             "description": "Election has ended"}), 403) #403 = HTTP Access Forbidden code
+        return response
 
     if user_authenticated(personal_number, auth_pin):
         registered_vote = submit_vote_to_blockchain(
@@ -69,35 +82,26 @@ def create_record():
             #add_private_key(voter_number, private_key_list[0], admin_pub_key)
             add_private_key(voter_number, voter_private_key, admin_pub_key)
 
-            response = make_response(jsonify({
+            response = prepare_response(jsonify({
                 'status': 'success',
                 'voter_id': voter_number,
                 'PublicImageBytes': encoded_public_key,
                 'PrivateImageBytes': encoded_private_key,
                 'VoterImageBytes': encoded_voter_key
             }), 201)
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            response.headers.add("Access-Control-Allow-Headers", "*")
-            response.headers.add("Access-Control-Allow-Methods", "*")
             return response
     else:
-        response = make_response(jsonify({
+        response = prepare_response(jsonify({
             'status': 'auth-error',
             'reason': "Falscher Auth-Code",
         }), 401)
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "*")
-        response.headers.add("Access-Control-Allow-Methods", "*")
-        return response.response
+        return response
 
-    response = make_response(jsonify({
+    response = prepare_response(jsonify({
         'status': 'error',
         'reason': "Sie haben bereits abgestimmt.",
     }), 400)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
-    return response.response
+    return response
 
 
 def prepare_response(json, code):
@@ -118,11 +122,18 @@ def find_nth(haystack, needle, n):
 
 @app.route('/api/getAuszaehlung', methods=['POST'])
 def get_auszaehlung():
-    value_spd = 0
-    value_cdu = 0
-    value_gruenen = 0
-    value_fdp = 0
-    value_linken = 0
+    #First check if the elections is over and we can send the tally
+    if not is_election_over():
+        response = prepare_response(jsonify(
+            {"status": "error",
+             "description": "Election still in progress"}), 403) #403 = HTTP Access Forbidden code
+        return response
+    
+    #Initialize empty result dictionary
+    results = {}
+    #Initialize it with the options from the config file
+    for option in get_options():
+        results[option] = 0 
 
     r = requests.post("http://127.0.0.1:45675/api/getTransactions")
     transactions = r.json()
@@ -143,26 +154,20 @@ def get_auszaehlung():
         encrypted_vote_base64 = str(transaction['encrypted_vote'])
         encrypted_vote = base64.b64decode(encrypted_vote_base64)
         output = decrypt(private_key.decode('UTF-8'), encrypted_vote)
+        
+        #Skip unknown values for now
+        vote = output.decode('UTF-8')
+        print("Decrypted vote: " + vote)
+        if vote not in get_options():
+            #NOTE: This would be a great place to implement write-in ballots
+            #Only some additional update logic would be needed here
+            continue
+        else:
+            results[vote] += 1;
 
-        if output.decode('UTF-8') == 'SPD':
-            value_spd += 1
-        elif output.decode('UTF-8') == 'CDU':
-            value_cdu += 1
-        elif output.decode('UTF-8') == 'FDP':
-            value_fdp += 1
-        elif output.decode('UTF-8') == 'Die Linken':
-            value_linken += 1
-        elif output.decode('UTF-8') == 'Bündnis 90 / Die Grünen':
-            value_gruenen += 1
-
-    response = prepare_response(jsonify({
-        'status': 'success',
-        'value_spd': value_spd,
-        'value_cdu': value_cdu,
-        'value_gruenen': value_gruenen,
-        'value_fdp': value_fdp,
-        'value_linken': value_linken,
-    }), 200)
+    response_dict = {"status": "success", "results": results}
+    #print(response_dict)
+    response = prepare_response(jsonify(response_dict), 200)
     return response
 
 
@@ -206,3 +211,4 @@ def send_vote(hashed_personal_number, encrypted_vote):
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=45679, debug=True)
+

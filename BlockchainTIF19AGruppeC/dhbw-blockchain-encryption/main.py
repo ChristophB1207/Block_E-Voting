@@ -50,6 +50,12 @@ def create_record():
     auth_pin = request.form['auth_pin']
     partei = request.form['partei']
 
+    if is_election_over():
+        response = prepare_response(jsonify(
+            {"status": "error",
+             "description": "Election has ended"}), 403) #403 = HTTP Access Forbidden code
+        return response
+
     if user_authenticated(personal_number, auth_pin):
         registered_vote = submit_vote_to_blockchain(
                                 personal_number=personal_number,
@@ -76,34 +82,25 @@ def create_record():
             #add_private_key(voter_number, private_key_list[0], admin_pub_key)
             add_private_key(voter_number, voter_private_key, admin_pub_key)
 
-            response = make_response(jsonify({
+            response = prepare_response(jsonify({
                 'status': 'success',
                 'voter_id': voter_number,
                 'PublicImageBytes': encoded_public_key,
                 'PrivateImageBytes': encoded_private_key,
                 'VoterImageBytes': encoded_voter_key
             }), 201)
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            response.headers.add("Access-Control-Allow-Headers", "*")
-            response.headers.add("Access-Control-Allow-Methods", "*")
             return response
     else:
-        response = make_response(jsonify({
+        response = prepare_response(jsonify({
             'status': 'auth-error',
             'reason': "Falscher Auth-Code",
         }), 401)
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "*")
-        response.headers.add("Access-Control-Allow-Methods", "*")
         return response
 
-    response = make_response(jsonify({
+    response = prepare_response(jsonify({
         'status': 'error',
         'reason': "Sie haben bereits abgestimmt.",
     }), 400)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
     return response
 
 
@@ -132,11 +129,6 @@ def get_auszaehlung():
              "description": "Election still in progress"}), 403) #403 = HTTP Access Forbidden code
         return response
     
-    #value_spd = 0
-    #value_cdu = 0
-    #value_gruenen = 0
-    #value_fdp = 0
-    #value_linken = 0
     #Initialize empty result dictionary
     results = {}
     #Initialize it with the options from the config file
@@ -162,17 +154,6 @@ def get_auszaehlung():
         encrypted_vote_base64 = str(transaction['encrypted_vote'])
         encrypted_vote = base64.b64decode(encrypted_vote_base64)
         output = decrypt(private_key.decode('UTF-8'), encrypted_vote)
-
-        #if output.decode('UTF-8') == 'SPD':
-        #    value_spd += 1
-        #elif output.decode('UTF-8') == 'CDU':
-        #    value_cdu += 1
-        #elif output.decode('UTF-8') == 'FDP':
-        #    value_fdp += 1
-        #elif output.decode('UTF-8') == 'Die Linken':
-        #    value_linken += 1
-        #elif output.decode('UTF-8') == 'Bündnis 90 / Die Grünen':
-        #    value_gruenen += 1
         
         #Skip unknown values for now
         vote = output.decode('UTF-8')
@@ -184,16 +165,8 @@ def get_auszaehlung():
         else:
             results[vote] += 1;
 
-    #response = prepare_response(jsonify({
-    #    'status': 'success',
-    #    'value_spd': value_spd,
-    #    'value_cdu': value_cdu,
-    #    'value_gruenen': value_gruenen,
-    #    'value_fdp': value_fdp,
-    #    'value_linken': value_linken,
-    #}), 200)
     response_dict = {"status": "success", "results": results}
-    print(response_dict)
+    #print(response_dict)
     response = prepare_response(jsonify(response_dict), 200)
     return response
 

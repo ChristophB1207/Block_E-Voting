@@ -75,7 +75,7 @@
 <div class="topnav">
     <a href="../dhbw-blockchain-website/index.html">Vote Now</a>
     <a href="../dhbw-blockchain-website/index2.html">Check your vote</a>
-    <a href="../dhbw-blockchain-website/index3.html">count votes</a>
+    <a href="../dhbw-blockchain-website/index3.html">Count votes</a>
 	<a href="../dhbw-blockchain-website/index4.html">Check the blockchain</a>
     <a href="../dhbw-blockchain-website/admin.html">Admin Page</a>
 </div>
@@ -240,7 +240,9 @@
             document.getElementById("voting_pin").readOnly = true;
             document.getElementById("partei").disabled = true;
         } else if (response.status === 'auth-error') {
-            alert('Authentification error');
+            alert('Authentifizierung fehlgeschlagen');
+        } else if ((response.status === 'error') && (response.description === 'Election has ended') {
+            alert('Wahlzeitraum vorbei');
         }
     }
 
