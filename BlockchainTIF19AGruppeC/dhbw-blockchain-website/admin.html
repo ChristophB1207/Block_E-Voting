@@ -228,7 +228,7 @@
     
         <label for="Date"></label> 
         <input type="datetime-local" id="Date" name="Date"
-        value="2022-12-11T15:00"
+        
         min="2022-12-01T00:00:" max="2025-01-01T00:00">            
     </div>
         
@@ -339,8 +339,10 @@ function handleSubmit(event){
     const data = new FormData(event.target);
     const options = Object.fromEntries(data.entries());
     options.Partei = data.getAll("Partei");
-    options.Date = data.getAll("Date");
-    
+    const dateStr = data.getAll("Date");
+    const date = new Date(dateStr);
+    const iso = date.toISOString();
+    options.Date = iso;
     downloadObjectAsJson(options, "config");
     return true;
     //console.log({options});
@@ -355,10 +357,20 @@ function downloadObjectAsJson(exportObj, exportName){
     var dataStr = "data:text(json;charset=uth-8,"+ encodeURIComponent(JSON.stringify(exportObj));
     var downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href",dataStr);
-    downloadAnchorNode.setAttribute("download", exportName)
+    downloadAnchorNode.setAttribute("download", exportName +".json")
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
 }
+
+window.addEventListener('load',() => {
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    now.setMilliseconds(null);
+    now.setSeconds(null);
+   
+   
+    document.getElementById('Date').value = now.toISOString().slice(0, -14);
+});
 </script> 
 </html>

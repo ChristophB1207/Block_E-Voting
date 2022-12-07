@@ -241,7 +241,7 @@
             document.getElementById("partei").disabled = true;
         } else if (response.status === 'auth-error') {
             alert('Authentifizierung fehlgeschlagen');
-        } else if ((response.status === 'error') && (response.description === 'Election has ended') {
+        } else if ((response.status === 'error') && (response.description === 'Election has ended')) {
             alert('Wahlzeitraum vorbei');
         }
     }
