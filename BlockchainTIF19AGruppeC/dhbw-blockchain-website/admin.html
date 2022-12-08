@@ -304,26 +304,7 @@ function removeField(minusElement){
     }
 
 
-//form.onsubmit = function(event){
-  //  event.preventDefault();
-
-
-   // let data = new FormData(form);
-
-
-    //let partei = [];
-    //data.forEach(function(value){
-      //  if(value !== ""){
-        //        partei.push(value);
-        //}
-    //});
-    
-   // let out="";
-    //for(let value of partei){
-      //  alert(value);}
-    
-
-//}
+    //Flatpickr for Datetime Form Field
 config = {
     enableTime: true,
     dateFormat: "Y-m-d H:i",
@@ -331,28 +312,28 @@ config = {
 flatpickr("input[type=datetime-local]", config);
 
 
-
+// Gets form Input and execute Download function 
 function handleSubmit(event){
     event.preventDefault();
     
     
     const data = new FormData(event.target);
     const options = Object.fromEntries(data.entries());
-    options.Partei = data.getAll("Partei");
-    const dateStr = data.getAll("Date");
+    options.Partei = data.getAll("Partei"); //gets Input from Partei field
+    const dateStr = data.getAll("Date"); //gets Input from Date field
     const date = new Date(dateStr);
     const iso = date.toISOString();
     options.Date = iso;
-    downloadObjectAsJson(options, "config");
+    downloadObjectAsJson(options, "config"); //Options Array and File Name passed to Download function
     return true;
     //console.log({options});
 }
 
-
+// Event listener for Submit button
 const form_ = document.querySelector('form');
 form_.addEventListener('submit', handleSubmit);
 
-
+//Automatic download of JSON config 
 function downloadObjectAsJson(exportObj, exportName){
     var dataStr = "data:text(json;charset=uth-8,"+ encodeURIComponent(JSON.stringify(exportObj));
     var downloadAnchorNode = document.createElement('a');
@@ -363,6 +344,7 @@ function downloadObjectAsJson(exportObj, exportName){
     downloadAnchorNode.remove();
 }
 
+// Sets standard value of date form field to current date
 window.addEventListener('load',() => {
     var now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
