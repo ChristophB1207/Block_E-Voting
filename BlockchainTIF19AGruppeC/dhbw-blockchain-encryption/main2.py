@@ -49,6 +49,12 @@ def create_record():
     pin = request.form['pin']
     auth_pin = request.form['auth_pin']
     partei = request.form['partei']
+    
+    if (not has_election_started()):
+        response = prepare_response(jsonify(
+            {"status": "error",
+             "description": "Election has not started"}), 403) #403 = HTTP Access Forbidden code
+        return response
 
     if is_election_over():
         response = prepare_response(jsonify(
