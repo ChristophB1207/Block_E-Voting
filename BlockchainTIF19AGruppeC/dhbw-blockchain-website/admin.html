@@ -223,21 +223,34 @@
 <form action="" method="post">
     
     
-    
+    <p>Start der Wahl:</p>
     <div class="field" >
     
-        <label for="Date"></label> 
-        <input type="datetime-local" id="Date" name="Date"
+        <label for="startDate"></label> 
+        <input type="datetime-local" id="startDate" name="startDate"
         
         min="2022-12-01T00:00:" max="2025-01-01T00:00">            
     </div>
+	
+	<p>Ende der Wahl:</p>
+	<div class="field" >
+    
+        <label for="endDate"></label> 
+        <input type="datetime-local" id="endDate" name="endDate"
         
-     <div class="field">
+        min="2022-12-01T00:00:" max="2025-01-01T00:00">            
+    </div>
+    
+	<p>Wahlmöglichkeiten:</p>
+    <div class="field">
            
-           <input type="text" name="Partei" placeholder="Partei">
-           <span onclick="addField(this)">+</span>
-           <span onclick="removeField(this)">-</span>
-        </div>
+        <input type="text" name="Partei" placeholder="Partei">
+        <span onclick="addField(this)">+</span>
+        <span onclick="removeField(this)">-</span>
+    </div>
+	
+	<p id="voterCountParagraph">Anzahl der Wähler:</p>
+	<input type="number" id="voterCount" name="voterCount" min="1">
             
         <button type="submit" >Wahl erstellen</button>
      </form>
@@ -260,6 +273,7 @@ let form = document.forms[0];
 let displayButton = document.querySelector("form button");
 function addField(plusElement){
    let displayButton = document.querySelector("form button");
+   let voterCountParagraph = document.getElementById("voterCountParagraph");
  
    // Stopping the function if the input field has no value.
    if(plusElement.previousElementSibling.value.trim() === ""){
@@ -288,7 +302,7 @@ function addField(plusElement){
    minus.appendChild(minusText);
  
    // Adding the elements to the DOM.
-   form.insertBefore(div, displayButton);
+   form.insertBefore(div, voterCountParagraph);
    div.appendChild(field);
    div.appendChild(plus);
    div.appendChild(minus);
@@ -318,12 +332,22 @@ function handleSubmit(event){
     
     
     const data = new FormData(event.target);
-    const options = Object.fromEntries(data.entries());
-    options.Partei = data.getAll("Partei"); //gets Input from Partei field
-    const dateStr = data.getAll("Date"); //gets Input from Date field
-    const date = new Date(dateStr);
-    const iso = date.toISOString();
-    options.Date = iso;
+    //const options = Object.fromEntries(data.entries());
+	let options = {};
+    options.options = data.getAll("Partei"); //gets Input from Partei field
+	
+	const startDateStr = data.getAll("startDate"); //gets Input from startDate field
+    const endDateStr = data.getAll("endDate"); //gets Input from endDate field
+    const startDate = new Date(startDateStr);
+	const endDate = new Date(endDateStr);
+    const startIso = startDate.toISOString();
+    options.start = startIso;
+	const endIso = endDate.toISOString();
+    options.end = endIso;
+	
+	const voterCount = parseInt(data.getAll("voterCount")[0]);
+	options.voterCount = voterCount;
+	
     downloadObjectAsJson(options, "config"); //Options Array and File Name passed to Download function
     return true;
     //console.log({options});
@@ -335,7 +359,7 @@ form_.addEventListener('submit', handleSubmit);
 
 //Automatic download of JSON config 
 function downloadObjectAsJson(exportObj, exportName){
-    var dataStr = "data:text(json;charset=uth-8,"+ encodeURIComponent(JSON.stringify(exportObj));
+    var dataStr = "data:text(json;charset=utf-8,"+ encodeURIComponent(JSON.stringify(exportObj));
     var downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href",dataStr);
     downloadAnchorNode.setAttribute("download", exportName +".json")
