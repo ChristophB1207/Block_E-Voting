@@ -41,4 +41,5 @@ sql_query = "INSERT INTO voters (PERSON_ID, HAS_VOTED, AUTH_ID) VALUES (?, ?, ?)
 cur.executemany(sql_query, voter_info)
 conn.commit()
 conn.close()
+print(f"Setup completed for new election ({voter_count} voters).")
     

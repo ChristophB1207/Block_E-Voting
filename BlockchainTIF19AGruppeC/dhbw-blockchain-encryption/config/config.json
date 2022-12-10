@@ -1,6 +1,6 @@
 {
 	"voterCount": 10,
-	"start": "2022-12-06T23:30:00.000Z",
-	"end":"2022-12-07T23:30:00.000Z",
-	"options":["CDU","SPD"]
+	"start": "2022-12-10T12:30:00.000Z",
+	"end":"2022-12-10T18:00:00.000Z",
+	"options":["Option 1","Option 2", "Option 3"]
 }

@@ -13,7 +13,7 @@ from flask import Flask, request, jsonify, make_response
 from auth_service import user_authenticated, get_server_from_discovery_service, add_private_key, save_admin_keys, \
     get_admin_priv_key, get_priv_keys, get_admin_pub_key
 from encryption_service import submit_vote_to_blockchain, private_key_list, generate_admin_private_key
-from config_management import get_options, is_election_over
+from config_management import get_options, is_election_over, has_election_started
 
 app = Flask(__name__)
 
