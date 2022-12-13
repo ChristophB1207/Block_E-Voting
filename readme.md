@@ -32,8 +32,10 @@ Folien und Video für den Pitch befinden sich im Ordner "Video".
 ## Aufbau der Dokumentation
 
 Eine Zusammenfassung der erreichten Ergebnisse zum Ende dieser Studienarbeit befindet sich im Dokument "Meilenstein.md".
-Die restliche Dokumentation befindet sich in "BlockchainTIF19AGruppeC/Dokumente".
+Die restliche Dokumentation befindet sich (als Word- und PDF-Dateien) in "BlockchainTIF19AGruppeC/Dokumente".
 	- "Systembeschreibung" enthält eine Beschreibung des E-Voting-Systems, wie es von der Vorgängergruppe hinterlassen wurde
 	- "Analyse_und_Schwachstellen" enthält eine genauere Untersuchung des Systems, inklusive einer Auflistung verschiedener Schwächen und Mängel.
 	- "Vorgenommene Änderungen" enthält eine Beschreibung der im Rahmen dieser Studienarbeit vorgenommenen Änderungen.
 	- "Ausblick" enthält eine Übersicht über mögliche zukünftige Weiterentwicklungen und theoretische Betrachtungen.
+	
+Eine Präsentation über den Ablauf und die Ergebnisse der Studienarbeitet findet sich in Präsentation.pptx.
