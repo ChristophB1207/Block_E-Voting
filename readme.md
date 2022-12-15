@@ -66,7 +66,7 @@ MariaDB Image mit Hilfe des Dockerfiles (/BlockchainTIF19AGruppeC/docker-compose
 ```bash
 docker build . -t mariadb -f Dockerfile-mariadb
 ```
-* * *
+---
 ### Starte MariaDB Container aus Image
 ```bash
 docker run --name mariadbtest -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:latest 
