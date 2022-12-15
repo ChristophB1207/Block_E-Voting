@@ -28,7 +28,54 @@ Dokumentation befindet sich im Ordner "Dokumente".
 Folien und Video für den Pitch befinden sich im Ordner "Video".
 
 # First Start Guide
+##Virtualenviroment Starten
+### Virtualenv installieren
+```bash
+pip install virtualenv
+```
 
+
+
+## Wiederherstellen des MariaDB Docker Container
+MariaDB Image mit Hilfe des Dockerfiles (/BlockchainTIF19AGruppeC/docker-compose-mariadb/Dockerfile-mariadb)
+```bash
+docker build . -t mariadb -f Dockerfile-mariadb
+```
+* * *
+### Starte MariaDB Container aus Image
+```bash
+docker run --name mariadbtest -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:latest 
+```
+
+### Kopiere auth_register.sql in Mariadb Container
+```bash
+sudo docker run --name mariadb -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:latest
+```
+
+* * *
+### Verbindung zur MariaDB Container Shell aufbauen
+```bash
+docker exec  -it mariadb bash
+```
+### Anmelden in Mariadb mit 
+
+```bash
+mariadb -u root -p 
+```
+### Danach Passwort angeben
+```SQL
+CREATE DATABASE auth_register
+```
+### Mariadb verlassen mit ```exit```
+* * *
+### auth_register.sql in Container Kopieren
+```bash
+docker cp /path/to/auth_register.sql
+```
+### Datenbank aus auth_register.sql wiederherstellen
+```bash
+mariadb -u root -p auth_register < auth_register.sql
+```
 ## Aufbau der Dokumentation
 
 Eine Zusammenfassung der erreichten Ergebnisse zum Ende dieser Studienarbeit befindet sich im Dokument "Meilenstein.md".
