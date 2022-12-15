@@ -28,14 +28,39 @@ Dokumentation befindet sich im Ordner "Dokumente".
 Folien und Video für den Pitch befinden sich im Ordner "Video".
 
 # First Start Guide
-##Virtualenviroment Starten
-### Virtualenv installieren
+## Virtualenviroment aufsetzen (Unix)
 ```bash
-pip install virtualenv
+pip3 install virtualenv
+```
+```bash
+python3 -m venv /your/path/Blockchain_venv
+```
+***
+### Virtual Enviroment aktivieren
+```bash
+ source Blockchain_venv/bin/activate
+```
+### Abhängigkeiten installieren
+```bash
+python3 -m pip install -r requirements.txt
 ```
 
-
-
+## Virtualenviroment aufsetzen (Windows)
+```powershell
+py -m pip install --user virtualenv
+```
+```powershell
+py -m venv /your/path/Blockchain_venv
+```
+### Virtual Enviroment aktivieren
+```powershell
+.\Blockchain_venv\Scripts\activate
+```
+### Abhängigkeiten installieren
+```powershell
+py -m pip install -r requirements.txt
+```
+***
 ## Wiederherstellen des MariaDB Docker Container
 MariaDB Image mit Hilfe des Dockerfiles (/BlockchainTIF19AGruppeC/docker-compose-mariadb/Dockerfile-mariadb)
 ```bash
