@@ -35,7 +35,7 @@ pip3 install virtualenv
 ```bash
 python3 -m venv /your/path/Blockchain_venv
 ```
-***
+---
 ### Virtual Enviroment aktivieren
 ```bash
  source Blockchain_venv/bin/activate
@@ -60,7 +60,7 @@ py -m venv /your/path/Blockchain_venv
 ```powershell
 py -m pip install -r requirements.txt
 ```
-***
+---
 ## Wiederherstellen des MariaDB Docker Container
 MariaDB Image mit Hilfe des Dockerfiles (/BlockchainTIF19AGruppeC/docker-compose-mariadb/Dockerfile-mariadb)
 ```bash
@@ -77,7 +77,7 @@ docker run --name mariadbtest -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:
 sudo docker run --name mariadb -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:latest
 ```
 
-* * *
+---
 ### Verbindung zur MariaDB Container Shell aufbauen
 ```bash
 docker exec  -it mariadb bash
@@ -92,7 +92,7 @@ mariadb -u root -p
 CREATE DATABASE auth_register
 ```
 ### Mariadb verlassen mit ```exit```
-* * *
+---
 ### auth_register.sql in Container Kopieren
 ```bash
 docker cp /path/to/auth_register.sql
