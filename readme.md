@@ -28,20 +28,45 @@ Dokumentation befindet sich im Ordner "Dokumente".
 Folien und Video für den Pitch befinden sich im Ordner "Video".
 
 # First Start Guide
-##Virtualenviroment Starten
-### Virtualenv installieren
+## Virtualenviroment aufsetzen (Unix)
 ```bash
-pip install virtualenv
+pip3 install virtualenv
+```
+```bash
+python3 -m venv /your/path/Blockchain_venv
+```
+---
+### Virtual Enviroment aktivieren
+```bash
+ source Blockchain_venv/bin/activate
+```
+### Abhängigkeiten installieren
+```bash
+python3 -m pip install -r requirements.txt
 ```
 
-
-
+## Virtualenviroment aufsetzen (Windows)
+```powershell
+py -m pip install --user virtualenv
+```
+```powershell
+py -m venv /your/path/Blockchain_venv
+```
+### Virtual Enviroment aktivieren
+```powershell
+.\Blockchain_venv\Scripts\activate
+```
+### Abhängigkeiten installieren
+```powershell
+py -m pip install -r requirements.txt
+```
+---
 ## Wiederherstellen des MariaDB Docker Container
 MariaDB Image mit Hilfe des Dockerfiles (/BlockchainTIF19AGruppeC/docker-compose-mariadb/Dockerfile-mariadb)
 ```bash
 docker build . -t mariadb -f Dockerfile-mariadb
 ```
-* * *
+---
 ### Starte MariaDB Container aus Image
 ```bash
 docker run --name mariadbtest -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:latest 
@@ -52,7 +77,7 @@ docker run --name mariadbtest -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:
 sudo docker run --name mariadb -e MYSQL_ROOT_PASSWORD='' -p 3306:3306 -d mariadb:latest
 ```
 
-* * *
+---
 ### Verbindung zur MariaDB Container Shell aufbauen
 ```bash
 docker exec  -it mariadb bash
@@ -67,7 +92,7 @@ mariadb -u root -p
 CREATE DATABASE auth_register
 ```
 ### Mariadb verlassen mit ```exit```
-* * *
+---
 ### auth_register.sql in Container Kopieren
 ```bash
 docker cp /path/to/auth_register.sql
