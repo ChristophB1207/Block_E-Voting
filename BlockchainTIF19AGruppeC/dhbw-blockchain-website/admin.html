@@ -340,16 +340,22 @@ function handleSubmit(event){
     const endDateStr = data.getAll("endDate"); //gets Input from endDate field
     const startDate = new Date(startDateStr);
 	const endDate = new Date(endDateStr);
-    const startIso = startDate.toISOString();
-    options.start = startIso;
-	const endIso = endDate.toISOString();
-    options.end = endIso;
+    if (isBefore(startDate, endDate) === true) {
+        const startIso = startDate.toISOString();
+        options.start = startIso;
+	    const endIso = endDate.toISOString();
+        options.end = endIso;
 	
-	const voterCount = parseInt(data.getAll("voterCount")[0]);
-	options.voterCount = voterCount;
+	    const voterCount = parseInt(data.getAll("voterCount")[0]);
+	    options.voterCount = voterCount;
 	
-    downloadObjectAsJson(options, "config"); //Options Array and File Name passed to Download function
-    return true;
+        downloadObjectAsJson(options, "config"); //Options Array and File Name passed to Download function
+        return true;
+    }
+    else {
+        alert("Das Start Datum muss vor dem End Datum liegen")
+    }
+    
     //console.log({options});
 }
 
@@ -376,7 +382,14 @@ window.addEventListener('load',() => {
     now.setSeconds(null);
    
    
-    document.getElementById('Date').value = now.toISOString().slice(0, -14);
+    document.getElementById('startDate').value = now.toISOString().slice(0, -14);
+    now.setDate(now.getDate() + 30);
+    document.getElementById('endDate').value = now.toISOString().slice(0, -14);
 });
+
+function isBefore(date1, date2){
+    return date1 < date2;
+}
+
 </script> 
 </html>
